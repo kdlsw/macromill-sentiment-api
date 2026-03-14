@@ -1,0 +1,29 @@
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.7.0
+joblib>=1.5.0
+matplotlib>=3.10.0
+
+# Track B - Deep Learning / Transformer dependencies
+# NOTE: Specific versions required for CUDA 11.6 compatibility with PyTorch 1.13.1
+# - transformers 4.35.0 is the last version compatible with PyTorch < 2.0
+# - torch 1.13.1+cu116 (CUDA 11.6)
+# - tokenizers 0.14.x is required by transformers 4.35.0
+# - accelerate 1.13.0 works with torch>=1.13.0
+# - datasets 4.6.1 is compatible
+torch==1.13.1+cu116
+transformers==4.35.0
+tokenizers==0.14.1
+accelerate==1.13.0
+datasets==4.6.1
+tokenizers>=0.14,<0.15
+tqdm>=4.66.0
+
+# API / Serving
+fastapi>=0.110.0
+uvicorn>=0.27.0
+pydantic>=2.6.0
+
+# Utilities
+python-dateutil>=2.9.0

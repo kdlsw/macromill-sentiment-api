@@ -1,0 +1,51 @@
+==========================================================================================
+                                 MODEL COMPARISON SUMMARY                                 
+==========================================================================================
+
+[SAMPLE INFORMATION]
+  tfidf_lr_v3:
+    - Total test samples: 2000
+    - Test split ratio: 0.2
+    - Random seed: 42
+  tfidf_linearsvm_v3:
+    - Total test samples: 2000
+    - Test split ratio: 0.2
+    - Random seed: 42
+  roberta_v3:
+    - Total test samples: 2000
+    - Test split ratio: 0.2
+    - Random seed: 42
+
+[PERFORMANCE METRICS]
+------------------------------------------------------------------------------------------
+Metric                   tfidf_lr_v3              tfidf_linearsvm_v3       roberta_v3               
+------------------------------------------------------------------------------------------
+Accuracy                 0.8620                   0.8650                   0.9215                   
+F1 Score                 0.8664                   0.8689                   0.9215                   
+ROC-AUC                  0.9379                   N/A                      0.9786                   
+
+[PERFORMANCE & EFFICIENCY]
+------------------------------------------------------------------------------------------
+Latency (ms)             0.7043                   0.7360                   12.7284                  
+Throughput (samples/s)   5618.00                  5393.36                  4052.72                  
+
+[MODEL INFORMATION]
+------------------------------------------------------------------------------------------
+  tfidf_lr_v3:
+    - Model type: model
+    - Artifact size: 1.36 MB
+    - Preprocessing: lowercase=True, strip_html=True
+  tfidf_linearsvm_v3:
+    - Model type: model
+    - Artifact size: 1.36 MB
+    - Preprocessing: lowercase=True, strip_html=True
+    - Warning: ROC-AUC not available: model does not support predict_proba
+  roberta_v3:
+    - Model type: roberta-base
+    - Artifact size: 478.72 MB
+    - Preprocessing: lowercase=False, strip_html=False
+
+==========================================================================================
+Best Model by Accuracy: roberta_v3
+Best Model by F1: roberta_v3
+==========================================================================================

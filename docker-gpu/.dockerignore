@@ -1,0 +1,8 @@
+*.zip
+*.pdf
+*.md
+!README.md
+checkpoints/
+.venv/
+__pycache__/
+*.pyc

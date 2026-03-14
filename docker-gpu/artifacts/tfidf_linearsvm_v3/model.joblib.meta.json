@@ -1,0 +1,13 @@
+{
+  "data_path": "work/IMDB Dataset.csv",
+  "max_samples": 10000,
+  "model_name": "tfidf_linearsvm",
+  "n_test": 2000,
+  "n_train": 8000,
+  "preprocess": {
+    "lowercase": true,
+    "strip_html": true
+  },
+  "seed": 42,
+  "test_size": 0.2
+}

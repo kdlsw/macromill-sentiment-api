@@ -1,0 +1,18 @@
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.7.0
+joblib>=1.5.0
+
+# Deep Learning / Transformer dependencies
+# GPU-enabled PyTorch with CUDA 11.6 (installed via pip index URL in Dockerfile)
+torch>=2.0.0
+transformers>=4.35.0
+tokenizers>=0.14.0
+accelerate>=0.20.0
+tqdm>=4.66.0
+
+# API / Serving
+fastapi>=0.110.0
+uvicorn>=0.27.0
+pydantic>=2.6.0

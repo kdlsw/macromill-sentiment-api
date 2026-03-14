@@ -1,0 +1,39 @@
+{
+  "accuracy": 0.865,
+  "artifact_path": "work/artifacts/tfidf_linearsvm_v3/model.joblib",
+  "artifact_size": {
+    "bytes": 1428652,
+    "mb": 1.36
+  },
+  "confusion_matrix": [
+    [
+      835,
+      157
+    ],
+    [
+      113,
+      895
+    ]
+  ],
+  "f1": 0.8689320388349514,
+  "latency": {
+    "avg_ms": 0.736,
+    "iterations": 100
+  },
+  "n_samples": 2000,
+  "preprocess": {
+    "lowercase": true,
+    "strip_html": true
+  },
+  "roc_auc": null,
+  "split": {
+    "seed": 42,
+    "source": "artifact_meta",
+    "test_size": 0.2
+  },
+  "throughput": {
+    "batch_size": 100,
+    "samples_per_sec": 5393.36
+  },
+  "warning": "ROC-AUC not available: model does not support predict_proba"
+}

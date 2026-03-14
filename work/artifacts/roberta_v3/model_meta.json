@@ -1,0 +1,22 @@
+{
+  "model_name": "roberta_base",
+  "model_path": "work/artifacts/roberta_v3/pytorch_model.bin",
+  "tokenizer_path": "work/artifacts/roberta_v3",
+  "n_train": 7200,
+  "n_val": 800,
+  "n_test": 2000,
+  "test_size": 0.2,
+  "val_size": 0.1,
+  "epochs": 2,
+  "batch_size": 4,
+  "learning_rate": 2e-05,
+  "max_length": 256,
+  "seed": 42,
+  "max_samples": 10000,
+  "data_path": "work/IMDB Dataset.csv",
+  "best_val_accuracy": 0.93625,
+  "preprocess": {
+    "strip_html": false,
+    "lowercase": false
+  }
+}

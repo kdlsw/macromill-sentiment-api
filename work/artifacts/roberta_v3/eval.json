@@ -1,0 +1,38 @@
+{
+  "accuracy": 0.9215,
+  "artifact_size": {
+    "bytes": 501979045,
+    "mb": 478.72
+  },
+  "confusion_matrix": [
+    [
+      904,
+      88
+    ],
+    [
+      69,
+      939
+    ]
+  ],
+  "f1": 0.9214869453770217,
+  "latency": {
+    "avg_ms": 12.7284,
+    "iterations": 100
+  },
+  "model": "roberta-base",
+  "n_samples": 2000,
+  "preprocess": {
+    "lowercase": false,
+    "strip_html": false
+  },
+  "roc_auc": 0.9786136312724014,
+  "split": {
+    "seed": 42,
+    "source": "artifact_meta",
+    "test_size": 0.2
+  },
+  "throughput": {
+    "batch_size": 100,
+    "samples_per_sec": 4052.72
+  }
+}

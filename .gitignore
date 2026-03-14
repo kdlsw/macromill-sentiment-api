@@ -1,0 +1,64 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific - Large/Binary files
+checkpoints/
+state.vscdb
+cursor-chat-*.html
+imdb-dataset-of-50k-movie-reviews.zip
+TakeHomeAssignment.pdf
+
+# Large model files - use GitHub Releases instead
+*.safetensors
+
+# Work directory - Dataset only (models should be tracked)
+
+# CUDA packages (downloaded during build)
+docker-gpu/cuda-packages/
+
+# Not needed for the repo
+task.txt
+task\ notes.txt
+HISTORY.md
+ground_rules.txt
+CLEANUP_PLAN.md
+work/approach_notes.txt
+work/system_dependencies.txt

@@ -1,0 +1,454 @@
+# macromill-sentiment CLI Manual
+
+## Overview
+
+This CLI provides commands for training, evaluating, and predicting sentiment using two tracks:
+
+- **Track A**: Traditional ML (TF-IDF + Logistic Regression / LinearSVM)
+- **Track B**: Deep Learning (RoBERTa transformer)
+
+## EDA: Exploratory Data Analysis
+
+```bash
+# Run EDA with default settings (outputs to work/eda/)
+python work/run_eda.py eda
+
+# Custom data path and output directory
+python work/run_eda.py eda \
+    --data-path "work/IMDB Dataset.csv" \
+    --output-dir work/eda_custom
+
+# Skip n-gram analysis (faster run)
+python work/run_eda.py eda --skip-ngrams
+
+# Custom n-gram settings
+python work/run_eda.py eda \
+    --top-ngrams 50 \
+    --max-features 100000 \
+    --min-df 3 \
+    --ngram-sample-size 20000
+```
+
+### Arguments
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--data-path` | `work/IMDB Dataset.csv` | Path to IMDB CSV dataset |
+| `--output-dir` | `work/eda` | Output directory for analysis results |
+| `--strip-html` | `true` | Remove HTML tags from reviews |
+| `--lowercase` | `true` | Convert text to lowercase |
+| `--skip-ngrams` | `false` | Skip n-gram frequency analysis |
+| `--top-ngrams` | `25` | Number of top n-grams to report per class |
+| `--max-features` | `50000` | Max features for TF-IDF vectorizer |
+| `--min-df` | `5` | Minimum document frequency for n-grams |
+| `--ngram-sample-size` | `10000` | Sample size for n-gram analysis |
+
+### Output Files
+
+The EDA generates the following files in the output directory:
+
+| File | Description |
+|------|-------------|
+| `run_args.json` | Configuration used for this run |
+| `summary.json` | Dataset summary (row count, label distribution) |
+| `class_balance.png` | Bar chart of positive/negative class distribution |
+| `length_chars.png` | Histogram of review lengths (characters) |
+| `length_tokens.png` | Histogram of review lengths (tokens) |
+| `html_presence.png` | Bar chart of HTML tag presence |
+| `ngram_config.json` | N-gram extraction configuration |
+| `top_ngrams.json` | Top n-grams by class and discriminative n-grams |
+
+## Common Setup
+
+```bash
+# Activate virtual environment
+cd /home/ubun/macromill
+source .venv/bin/activate
+
+# Set HuggingFace proxy (if needed for model downloads)
+export HTTP_PROXY=http://127.0.0.1:8118
+export HTTPS_PROXY=http://127.0.0.1:8118
+
+# Or use the wrapper script (avoids module installation)
+python work/run_cli.py --help
+```
+
+---
+
+## Track A: TF-IDF Models
+
+### Available Models
+
+| Model Name | Description |
+|------------|-------------|
+| `tfidf_lr` | TF-IDF + Logistic Regression |
+| `tfidf_linearsvm` | TF-IDF + Linear SVM |
+
+### Training
+
+```bash
+# Using the wrapper script (recommended)
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/tfidf_lr_v3 \
+    --model tfidf_lr
+
+# TF-IDF + Linear SVM
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/tfidf_linearsvm_v3 \
+    --model tfidf_linearsvm
+
+# With custom settings
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/tfidf_custom \
+    --model tfidf_lr \
+    --seed 123 \
+    --test-size 0.15 \
+    --max-samples 10000 \
+    --strip-html \
+    --lowercase
+```
+
+#### Arguments (Track A Training)
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--data-path` | Path | `work/IMDB Dataset.csv` | Input CSV file |
+| `--artifact-dir` | Path | (required) | Output directory for model |
+| `--model` | str | `tfidf_lr` | Model: `tfidf_lr` or `tfidf_linearsvm` |
+| `--seed` | int | 42 | Random seed |
+| `--test-size` | float | 0.2 | Test set ratio |
+| `--max-samples` | int | None | Limit training samples |
+| `--strip-html` | flag | True | Remove HTML tags |
+| `--lowercase` | flag | True | Convert to lowercase |
+
+### Evaluation
+
+```bash
+# Basic evaluation
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib
+
+# With custom metrics
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --metrics accuracy f1 confusion_matrix
+
+# Save results to JSON
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --output-json work/artifacts/tfidf_lr_v3/eval.json
+
+# Evaluate on held-out test set (uses metadata from training)
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --output-json work/artifacts/tfidf_lr_v3/eval.json
+
+# Force override split parameters
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --seed 42 \
+    --test-size 0.2
+```
+
+#### Arguments (Track A Evaluation)
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--data-path` | Path | `work/IMDB Dataset.csv` | Input CSV file |
+| `--artifact-path` | Path | (required) | Path to model.joblib |
+| `--metrics` | list | `accuracy f1 confusion_matrix roc_auc` | Metrics to compute |
+| `--output-json` | Path | None | Save results to JSON |
+| `--max-samples` | int | None | Limit evaluation samples |
+| `--seed` | int | None | Random seed (uses artifact meta if not set) |
+| `--test-size` | float | None | Test set ratio (uses artifact meta if not set) |
+| `--ignore-meta` | flag | False | Ignore artifact metadata |
+| `--measure-latency` | flag | True | Measure inference latency |
+| `--latency-warmup` | int | 10 | Warmup iterations for latency |
+| `--latency-iterations` | int | 100 | Iterations for latency measurement |
+| `--strip-html` | flag | True | Remove HTML tags |
+| `--lowercase` | flag | True | Convert to lowercase |
+
+### Prediction
+
+```bash
+# Single prediction
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --text "This movie was absolutely fantastic!"
+
+# With probability scores
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --text "This movie was terrible, I hated it."
+
+# Disable preprocessing
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --text "Great movie!" \
+    --no-strip-html \
+    --no-lowercase
+```
+
+---
+
+## Track B: RoBERTa Transformer
+
+### Data Split (Important)
+
+RoBERTa uses a **three-way split**:
+- **20%** test set (held out completely, never seen during training)
+- Of remaining 80%: **90%** train / **10%** validation
+
+Example with 5000 samples:
+- Train: 3600 (72%)
+- Validation: 400 (8%)
+- Test: 1000 (20%)
+
+Evaluation automatically uses the held-out test set from training.
+
+### Training
+
+```bash
+# Basic training (uses GPU if available)
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/roberta_v2 \
+    --model roberta
+
+# With custom hyperparameters
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/roberta_v2 \
+    --model roberta \
+    --epochs 3 \
+    --batch-size 8 \
+    --lr 3e-5 \
+    --max-length 512
+
+# Smaller batch size for limited GPU memory (e.g., 6GB VRAM)
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/roberta_v2 \
+    --model roberta \
+    --batch-size 4 \
+    --max-samples 5000
+
+# Full dataset training (requires more GPU memory)
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/roberta_full \
+    --model roberta \
+    --epochs 2 \
+    --batch-size 2
+```
+
+#### Arguments (Track B Training)
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--data-path` | Path | `work/IMDB Dataset.csv` | Input CSV file |
+| `--artifact-dir` | Path | (required) | Output directory for model |
+| `--model` | str | - | Set to `roberta` |
+| `--epochs` | int | 1 | Number of training epochs |
+| `--batch-size` | int | 16 | Batch size (use 4-8 for 6GB GPU) |
+| `--lr` | float | 2e-5 | Learning rate |
+| `--max-length` | int | 256 | Max sequence length |
+| `--max-samples` | int | None | Limit training samples |
+| `--seed` | int | 42 | Random seed |
+| `--test-size` | float | 0.2 | Test set ratio (held out from training) |
+| `--local-files-only` | flag | False | Only use local cache, no HuggingFace download |
+| `--strip-html` | flag | True | Remove HTML tags |
+| `--lowercase` | flag | True | Convert to lowercase |
+
+### Evaluation
+
+```bash
+# Basic evaluation (auto-detects held-out test set)
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/roberta_v2/model.safetensors
+
+# Note: The --artifact-path can point to any file in the model directory
+# The system auto-detects RoBERTa models by checking for config.json
+
+# With custom metrics
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/roberta_v2/model.safetensors \
+    --metrics accuracy f1
+
+# Save results
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/roberta_v2/model.safetensors \
+    --output-json work/artifacts/roberta_v2/eval.json
+```
+
+#### Arguments (Track B Evaluation)
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--data-path` | Path | `work/IMDB Dataset.csv` | Input CSV file |
+| `--artifact-path` | Path | (required) | Path to model file (e.g., model.safetensors) |
+| `--metrics` | list | `accuracy f1 confusion_matrix roc_auc` | Metrics to compute |
+| `--output-json` | Path | None | Save results to JSON |
+| `--max-samples` | int | None | Limit evaluation samples |
+| `--seed` | int | None | Random seed (uses artifact meta if not set) |
+| `--test-size` | float | None | Test set ratio (uses artifact meta if not set) |
+| `--ignore-meta` | flag | False | Ignore artifact metadata |
+| `--measure-latency` | flag | True | Measure inference latency |
+| `--latency-warmup` | int | 10 | Warmup iterations for latency |
+| `--latency-iterations` | int | 100 | Iterations for latency measurement |
+
+### Prediction
+
+```bash
+# Single prediction
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/roberta_v2/config.json \
+    --text "This movie was absolutely fantastic!"
+
+# With probability scores
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/roberta_v2/config.json \
+    --text "I really hated this film, it was boring."
+
+# Alternative: point to any file in the model directory
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/roberta_v2/model.safetensors \
+    --text "What a great movie, highly recommend!"
+```
+
+---
+
+## Examples: Complete Workflows
+
+### Track A Complete Workflow
+
+```bash
+# 1. Train
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/tfidf_linearsvm_v3 \
+    --model tfidf_linearsvm
+
+# 2. Evaluate (uses held-out test set)
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_linearsvm_v3/model.joblib \
+    --output-json work/artifacts/tfidf_linearsvm_v3/eval.json
+
+# 3. Predict
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/tfidf_linearsvm_v3/model.joblib \
+    --text "Amazing film, loved every minute!"
+```
+
+### Track B Complete Workflow
+
+```bash
+# 1. Train (with proxy for model download if needed)
+HTTP_PROXY=http://127.0.0.1:8118 HTTPS_PROXY=http://127.0.0.1:8118 \
+python work/run_cli.py train \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-dir work/artifacts/roberta_v2 \
+    --model roberta \
+    --epochs 2 \
+    --batch-size 4 \
+    --max-samples 5000
+
+# 2. Evaluate (uses held-out test set from training)
+python work/run_cli.py eval \
+    --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/roberta_v2/model.safetensors \
+    --output-json work/artifacts/roberta_v2/eval.json
+
+# 3. Predict
+python work/run_cli.py predict-local \
+    --artifact-path work/artifacts/roberta_v2/config.json \
+    --text "Best movie I've ever seen!"
+```
+
+---
+
+## Model Evaluation Summary
+
+To generate evaluation comparison visualizations and summaries across multiple models:
+
+```bash
+# 1. Run evaluation on each model, save to JSON
+python work/run_cli.py eval --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+    --output-json work/eval/tfidf_lr.json
+
+python work/run_cli.py eval --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/tfidf_linearsvm_v3/model.joblib \
+    --output-json work/eval/tfidf_linearsvm.json
+
+python work/run_cli.py eval --data-path "work/IMDB Dataset.csv" \
+    --artifact-path work/artifacts/roberta_v2/config.json \
+    --output-json work/eval/roberta.json
+
+# 2. Generate comparison plots and summary (using run_eda.py wrapper)
+python work/run_eda.py eval-plot \
+    --eval-json work/eval/tfidf_lr.json \
+    --eval-json work/eval/tfidf_linearsvm.json \
+    --eval-json work/eval/roberta.json \
+    --output-dir work/eval
+```
+
+### Arguments
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--eval-json` | (required) | Path to evaluation JSON file (can specify multiple times) |
+| `--output-dir` | `work/eval` | Output directory for plots and summary |
+| `--plot/--no-plot` | True | Generate metrics bar chart |
+| `--summary/--no-summary` | True | Generate JSON summary |
+| `--text/--no-text` | True | Print text table to console |
+
+### Output
+
+| File | Description |
+|------|-------------|
+| (console) | Text table comparing all models (accuracy, F1, ROC-AUC, confusion matrix, latency, throughput, artifact size) |
+| `work/eval/metrics_bar.png` | Bar chart comparing accuracy, F1, ROC-AUC across models |
+| `work/eval/summary.json` | JSON summary with per-model metrics and best model comparisons |
+
+---
+
+## Evaluation Metrics Explained
+
+### Quality Metrics
+
+| Metric | Description | Available For |
+|--------|-------------|---------------|
+| **Accuracy** | Overall classification accuracy | All models |
+| **F1** | Weighted F1 score (precision/recall harmonic mean) | All models |
+| **ROC-AUC** | Area under ROC curve | Models with predict_proba (LR, RoBERTa) |
+| **Confusion Matrix** | True/false positives/negatives | All models |
+
+### Performance Metrics
+
+| Metric | Description |
+|--------|-------------|
+| **Latency** | Average time per sample (ms) |
+| **Throughput** | Samples processed per second |
+| **Artifact Size** | Model file size on disk (MB) |
+
+---
+
+## Notes
+
+- **GPU**: RoBERTa training requires CUDA. Use smaller `--batch-size` if you get OOM errors.
+- **Proxy**: Set HTTP_PROXY/HTTPS_PROXY for downloading RoBERTa from HuggingFace.
+- **Auto-detection**: The eval and predict-local commands auto-detect whether you're using a Track A (sklearn) or Track B (RoBERTa) model based on the artifact structure.
+- **Data Split**: Both tracks use stratified train/test splits. Track B additionally uses a validation set during training and holds out a test set for final evaluation.
