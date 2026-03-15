@@ -76,6 +76,8 @@ Actual Neg    904     88
        Pos     69    939
 ```
 
+![MetricsBar](./work/eda/metrics_bar.png)
+
 ## Interpretation
 
 ### Key Observations

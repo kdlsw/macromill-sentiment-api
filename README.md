@@ -31,6 +31,16 @@ source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 ```
 
+### Manual Model Download (Optional)
+
+If you want to use the pre-trained RoBERTa safetensor v1.0 model, download it from the GitHub Releases assets and place it in the appropriate location:
+
+- **Host machine**: `work/artifacts/roberta_v3/model.safetensors`
+- **GPU Docker**: `docker-gpu/artifacts/roberta_v2/model.safetensors`
+- **CPU Docker**: `docker-cpu/artifacts/roberta_v2/model.safetensors`
+
+The API will automatically download the model on first run if not found locally.
+
 ### Running the API
 
 ```bash
@@ -75,6 +85,8 @@ macromill-sentiment-api/
 └── README.md                   # This file
 ```
 
+See [STRUCTURE.md](./STRUCTURE.md) for detailed structures.
+
 ## Models
 
 | Model | Type | Accuracy | Latency | Size |
@@ -83,7 +95,7 @@ macromill-sentiment-api/
 | TF-IDF + Linear SVM | Traditional ML | 86.50% | 0.74ms | 1.36 MB |
 | RoBERTa-base | Transformer | **92.15%** | 12.73ms | 478.72 MB |
 
-See [EVALUATION.md](./EVALUATION.md) for detailed metrics.
+See [EVALUATION.md](./EVALUATION.md) for detailed metrics. 
 
 ## Usage
 
@@ -200,6 +212,8 @@ This project uses the [IMDb Dataset of 50K Movie Reviews](https://www.kaggle.com
 - **Size**: 50,000 reviews
 - **Labels**: Positive / Negative
 - **Format**: CSV with `review` and `sentiment` columns
+
+See [DATA.md](./DATA.md) for detailed analysis. 
 
 ## Preprocessing
 
