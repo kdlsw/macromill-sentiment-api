@@ -1,60 +1,13 @@
 {
-  "models": {
-    "tfidf_lr_v3": {
-      "accuracy": 0.862,
-      "f1": 0.8664085188770572,
-      "roc_auc": 0.9378900249615976,
-      "confusion_matrix": {
-        "TN": 829,
-        "FP": 163,
-        "FN": 113,
-        "TP": 895
-      },
-      "latency_ms": 0.7043,
-      "throughput_samples_per_sec": 5618.0,
-      "artifact_size_mb": 1.36
-    },
-    "tfidf_linearsvm_v3": {
-      "accuracy": 0.865,
-      "f1": 0.8689320388349514,
-      "roc_auc": null,
-      "confusion_matrix": {
-        "TN": 835,
-        "FP": 157,
-        "FN": 113,
-        "TP": 895
-      },
-      "latency_ms": 0.736,
-      "throughput_samples_per_sec": 5393.36,
-      "artifact_size_mb": 1.36
-    },
-    "roberta_v3": {
-      "accuracy": 0.9215,
-      "f1": 0.9214869453770217,
-      "roc_auc": 0.9786136312724014,
-      "confusion_matrix": {
-        "TN": 904,
-        "FP": 88,
-        "FN": 69,
-        "TP": 939
-      },
-      "latency_ms": 12.7284,
-      "throughput_samples_per_sec": 4052.72,
-      "artifact_size_mb": 478.72
-    }
+  "contains_br_tag_rate": 0.584,
+  "data_path": "work/IMDB Dataset.csv",
+  "label_counts": {
+    "negative": 25000,
+    "positive": 25000
   },
-  "comparison": {
-    "accuracy": {
-      "best_model": "roberta_v3",
-      "value": 0.9215
-    },
-    "f1": {
-      "best_model": "roberta_v3",
-      "value": 0.9214869453770217
-    },
-    "roc_auc": {
-      "best_model": "roberta_v3",
-      "value": 0.9786136312724014
-    }
+  "n_rows": 50000,
+  "preprocess": {
+    "lowercase": true,
+    "strip_html": true
   }
 }

@@ -1,11 +1,11 @@
 {
-  "data_path": "/home/ubun/macromill/work/IMDB Dataset.csv",
+  "data_path": "work/IMDB Dataset.csv",
   "lowercase": true,
   "max_features": 50000,
   "min_df": 5,
   "ngram_sample_size": 10000,
-  "output_dir": "/home/ubun/macromill/work/eda",
-  "skip_ngrams": true,
+  "output_dir": "work/eda",
+  "skip_ngrams": false,
   "strip_html": true,
   "top_ngrams": 25
 }

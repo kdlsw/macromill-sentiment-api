@@ -1,0 +1,11 @@
+{
+  "max_features": 50000,
+  "min_df": 5,
+  "ngram_range": [
+    1,
+    2
+  ],
+  "ngram_sample_size": 10000,
+  "stop_words": "sklearn_english_minus_negators",
+  "top_ngrams": 25
+}

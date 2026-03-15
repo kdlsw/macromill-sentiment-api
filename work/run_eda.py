@@ -244,6 +244,8 @@ def main(argv: list[str] | None = None) -> int:
     eda_parser.add_argument("--max-features", type=int, default=50_000)
     eda_parser.add_argument("--min-df", type=int, default=5)
     eda_parser.add_argument("--ngram-sample-size", type=int, default=10_000)
+    eda_parser.add_argument("--wordcloud-mode", type=str, default="diff", choices=["by_class", "diff"])
+    eda_parser.add_argument("--wordcloud-max-words", type=int, default=100)
 
     # Eval-plot subcommand
     eval_plot_parser = sub.add_parser("eval-plot", help="Generate evaluation plots from model results")
@@ -312,6 +314,8 @@ def main(argv: list[str] | None = None) -> int:
         eda_argv.extend(["--max-features", str(args.max_features)])
         eda_argv.extend(["--min-df", str(args.min_df)])
         eda_argv.extend(["--ngram-sample-size", str(args.ngram_sample_size)])
+        eda_argv.extend(["--wordcloud-mode", str(args.wordcloud_mode)])
+        eda_argv.extend(["--wordcloud-max-words", str(args.wordcloud_max_words)])
         return eda_main(eda_argv)
 
     elif args.subcommand == "eval-plot":

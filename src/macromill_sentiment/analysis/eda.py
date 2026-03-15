@@ -100,6 +100,7 @@ def main(argv: list[str] | None = None) -> int:
             (out_dir / "top_ngrams.json").write_text(
                 json.dumps(ngram_report, indent=2, sort_keys=False), encoding="utf-8"
             )
+            _plot_wordclouds(ngram_report, out_dir, mode=args.wordcloud_mode, max_words=args.wordcloud_max_words)
 
     return 0
 
@@ -115,6 +116,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-features", type=int, default=50_000)
     p.add_argument("--min-df", type=int, default=5)
     p.add_argument("--ngram-sample-size", type=int, default=10_000)
+    p.add_argument("--wordcloud-mode", type=str, default="diff", choices=["by_class", "diff"])
+    p.add_argument("--wordcloud-max-words", type=int, default=100)
     return p
 
 
@@ -264,6 +267,93 @@ def _top_ngrams_by_class(
     }
 
     return report
+
+
+def _plot_wordclouds(
+    ngram_report: dict,
+    out_dir: Path,
+    *,
+    mode: str,
+    max_words: int = 100,
+) -> None:
+    """Generate word cloud images from n-gram analysis.
+
+    Args:
+        ngram_report: The n-gram analysis report dict (from _top_ngrams_by_class)
+        out_dir: Output directory for images
+        mode: 'by_class' or 'diff'
+            - 'by_class': use tfidf_mean_by_class (raw TF-IDF scores)
+            - 'diff': use tfidf_mean_pos_minus_mean_neg (discriminative power)
+        max_words: Maximum number of words in each word cloud
+    """
+    from wordcloud import WordCloud
+    import matplotlib.pyplot as plt
+
+    if mode == "by_class":
+        data_key = "tfidf_mean_by_class"
+        suffix = "by_class"
+    elif mode == "diff":
+        data_key = "tfidf_mean_pos_minus_mean_neg"
+        suffix = "diff"
+    else:
+        raise ValueError(f"Unknown mode: {mode!r}")
+
+    if data_key not in ngram_report:
+        return
+
+    data = ngram_report[data_key]
+
+    # Color functions
+    def green_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        import random
+        r = random.randint(0, 50)
+        g = random.randint(150, 220)
+        b = random.randint(0, 50)
+        return f"rgb({r}, {g}, {b})"
+
+    def red_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        import random
+        r = random.randint(200, 255)
+        g = random.randint(0, 80)
+        b = random.randint(0, 50)
+        return f"rgb({r}, {g}, {b})"
+
+    # Generate for positive and negative
+    for sentiment, color_func in [("positive", green_color_func), ("negative", red_color_func)]:
+        if sentiment not in data:
+            continue
+
+        items = data[sentiment]
+
+        if mode == "by_class":
+            # Use mean_tfidf as weight
+            word_freq = {item["ngram"]: item["mean_tfidf"] for item in items}
+            title = f"Word Cloud - {sentiment.title()} (TF-IDF Mean)"
+        else:
+            # Use absolute mean_diff as weight (for visibility)
+            word_freq = {item["ngram"]: abs(item["mean_diff"]) for item in items}
+            title = f"Word Cloud - {sentiment.title()} (Discriminative Power)"
+
+        if not word_freq:
+            continue
+
+        wc = WordCloud(
+            width=800,
+            height=400,
+            max_words=max_words,
+            background_color="white",
+            prefer_horizontal=0.7,
+        )
+        wc.generate_from_frequencies(word_freq)
+        wc.recolor(color_func=color_func)
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.imshow(wc, interpolation="bilinear")
+        ax.axis("off")
+        ax.set_title(title, fontsize=14, pad=10)
+        fig.tight_layout()
+        fig.savefig(out_dir / f"wordcloud_{suffix}_{sentiment}.png", dpi=150)
+        plt.close(fig)
 
 
 if __name__ == "__main__":

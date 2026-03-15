@@ -4,6 +4,7 @@ numpy>=1.26.0
 scikit-learn>=1.7.0
 joblib>=1.5.0
 matplotlib>=3.10.0
+wordcloud>=1.9.0
 
 # Track B - Deep Learning / Transformer dependencies
 # NOTE: Specific versions required for CUDA 11.6 compatibility with PyTorch 1.13.1
