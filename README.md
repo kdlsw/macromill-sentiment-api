@@ -56,6 +56,8 @@ The API will be available at:
 - **Swagger Docs**: http://localhost:8000/docs
 - **Health Check**: http://localhost:8000/health
 
+See [API.md](./API.md) for detailed instruction.
+
 ### Example Prediction
 
 ```bash
