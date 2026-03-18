@@ -46,9 +46,6 @@ The API will automatically download the model on first run if not found locally.
 ```bash
 # Start the FastAPI server
 uvicorn macromill_sentiment.api.main:app --host 0.0.0.0 --port 8000
-
-# Or use the wrapper script
-python -m macromill_sentiment.cli serve
 ```
 
 The API will be available at:
@@ -72,18 +69,23 @@ curl -X POST http://localhost:8000/predict \
 macromill-sentiment-api/
 ├── src/macromill_sentiment/    # Main Python package
 │   ├── api/                    # FastAPI service
-│   ├── cli/                    # Command-line interface
+│   ├── cli.py                  # Command-line interface
 │   ├── models/                 # Model implementations
 │   ├── data/                   # Data loading and preprocessing
 │   ├── analysis/               # EDA and visualization
 │   └── artifacts/              # Model I/O utilities
 ├── work/                       # Local outputs
+│   ├── IMDB Dataset.csv        # Dataset (50K movie reviews)
+│   ├── run_cli.py              # CLI wrapper script
+│   ├── run_eda.py              # EDA script
 │   ├── eda/                    # EDA results
 │   └── artifacts/              # Trained model artifacts
 ├── docker-cpu/                 # CPU-only Docker image
 ├── docker-gpu/                 # GPU Docker image (CUDA 11.6)
-├── ENVIRONMENT.md              # Environment setup guide
+├── API.md                      # API documentation
+├── DATA.md                     # Data analysis (EDA)
 ├── EVALUATION.md               # Model evaluation results
+├── STRUCTURE.md                # Detailed project structure
 └── README.md                   # This file
 ```
 
@@ -116,8 +118,13 @@ python work/run_eda.py compare
 ### Training
 
 ```bash
-# Train TF-IDF + Logistic Regression
+# Train TF-IDF + Logistic Regression (using CLI module directly)
 python -m macromill_sentiment.cli train \
+  --model tfidf_lr \
+  --artifact-dir work/artifacts/tfidf_lr_v3
+
+# Or use the wrapper script
+python work/run_cli.py train \
   --model tfidf_lr \
   --artifact-dir work/artifacts/tfidf_lr_v3
 
@@ -132,8 +139,13 @@ python -m macromill_sentiment.cli train \
 ### Evaluation
 
 ```bash
-# Evaluate a model
+# Evaluate a model (using CLI module directly)
 python -m macromill_sentiment.cli eval \
+  --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+  --output-json work/artifacts/tfidf_lr_v3/eval.json
+
+# Or use the wrapper script
+python work/run_cli.py eval \
   --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
   --output-json work/artifacts/tfidf_lr_v3/eval.json
 ```
@@ -141,8 +153,13 @@ python -m macromill_sentiment.cli eval \
 ### Local Prediction
 
 ```bash
-# Predict sentiment
+# Predict sentiment (using CLI module directly)
 python -m macromill_sentiment.cli predict-local \
+  --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
+  --text "This film was terrible and boring."
+
+# Or use the wrapper script
+python work/run_cli.py predict-local \
   --artifact-path work/artifacts/tfidf_lr_v3/model.joblib \
   --text "This film was terrible and boring."
 ```

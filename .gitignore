@@ -63,3 +63,9 @@ CLEANUP_PLAN.md
 work/approach_notes.txt
 work/system_dependencies.txt
 WORKFLOW_FLOWCHART.md
+
+# Docker helper scripts (not actively used - use docker-compose instead)
+docker-cpu/build.sh
+docker-cpu/run.sh
+docker-gpu/build.sh
+docker-gpu/run.sh
