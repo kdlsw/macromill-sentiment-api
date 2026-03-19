@@ -67,7 +67,7 @@ class ModelService:
         elif model_name == "tfidf_linearsvm":
             artifact_path = self.artifacts_dir / "tfidf_linearsvm_v3"
         elif model_name == "roberta":
-            artifact_path = self.artifacts_dir / "roberta_v2"
+            artifact_path = self.artifacts_dir / "roberta_v3"
         else:
             raise ValueError(f"Unknown model: {model_name}")
         

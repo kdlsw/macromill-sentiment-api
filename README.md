@@ -60,7 +60,7 @@ See [API.md](./API.md) for detailed instruction.
 ```bash
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
-  -d '{"text": "This movie was absolutely fantastic!", "model_name": "roberta_v3"}'
+  -d '{"text": "This movie was absolutely fantastic!", "model_name": "roberta"}'
 ```
 
 ## Project Structure
